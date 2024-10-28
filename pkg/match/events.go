@@ -6,14 +6,6 @@ import (
 )
 
 // Event представляет событие, которое может произойти во время матча
-type Event struct {
-	Type   string
-	Minute int
-	Team   string
-	Player string
-	Score1 int
-	Score2 int
-}
 
 // GenerateRandomEvent генерирует случайное событие для симуляции матча
 func (m *Match) GenerateRandomEvent(minute int) {

@@ -1,18 +1,27 @@
 package match
 
 import (
+	"Footballsim/pkg/player"
 	"Footballsim/pkg/team"
 	"fmt"
 	"math/rand"
 )
 
+// Event представляет событие, которое может произойти во время матча
+type Event struct {
+	Type   string
+	Minute int
+	Team   *team.Team
+	Player *player.Player
+}
+
+// Match представляет футбольный матч
 type Match struct {
 	Team1      *team.Team
 	Team2      *team.Team
 	Duration   int
 	IsFinished bool
-	// Score1     int
-	// Score2     int
+	Events     []Event // Список событий матча
 }
 
 // NewMatch создает новый матч между двумя командами с заданной продолжительностью
@@ -79,8 +88,23 @@ func (m *Match) simulateMinute(minute int) {
 		player := scoringTeam.Players[rand.Intn(len(scoringTeam.Players))]
 		player.ScoreGoal()
 		fmt.Printf("Гол! %s забивает. Игрок: %s. Счет: %d:%d\n", scoringTeam.Name, player.Name, m.Score1(), m.Score2())
+
+		// Добавляем событие гола
+		m.Events = append(m.Events, Event{Type: "Goal", Minute: minute, Team: scoringTeam, Player: player})
 	} else {
-		fmt.Println("Ничего не произошло.")
+		// Генерация случайного события (фол, желтая карточка, травма)
+		eventTypes := []string{"Foul", "Yellow Card", "Injury"}
+		if rand.Intn(100) < 10 { // 10% шанс на событие
+			eventType := eventTypes[rand.Intn(len(eventTypes))]
+			player := m.Team1.Players[rand.Intn(len(m.Team1.Players))]
+			if rand.Intn(2) == 1 {
+				player = m.Team2.Players[rand.Intn(len(m.Team2.Players))]
+			}
+			fmt.Printf("%s совершил событие: %s\n", player.Name, eventType)
+			m.Events = append(m.Events, Event{Type: eventType, Minute: minute, Team: m.Team1, Player: player})
+		} else {
+			fmt.Println("Ничего не произошло.")
+		}
 	}
 
 	if minute == m.Duration {

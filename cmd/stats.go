@@ -4,10 +4,10 @@ import (
 	"Footballsim/pkg/db" // Импортируем пакет для работы с MongoDB
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/spf13/cobra"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -56,15 +56,22 @@ var statsCmd = &cobra.Command{
 	Long:  `This command displays the statistics of previously simulated football matches.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Displaying match statistics...")
-		matchStats, err := FetchMatchStats()
-		if err != nil {
-			log.Fatalf("Ошибка при получении статистики матчей: %v", err)
-		}
+		collection := db.GetCollection("matches")
 
-		// Выводим статистику матчей
-		for _, match := range matchStats {
-			fmt.Printf("Матч: %s %d:%d %s (Продолжительность: %d минут)\n",
-				match.Team1, match.Score1, match.Score2, match.Team2, match.Duration)
+		cursor, err := collection.Find(context.TODO(), bson.D{})
+		if err != nil {
+			fmt.Printf("Ошибка при получении статистики матчей: %v\n", err)
+			return
+		}
+		defer cursor.Close(context.TODO())
+
+		for cursor.Next(context.TODO()) {
+			var match bson.M
+			if err := cursor.Decode(&match); err != nil {
+				fmt.Printf("Ошибка при декодировании: %v\n", err)
+				continue
+			}
+			fmt.Printf("Матч: %s против %s, Счет: %d:%d\n", match["team1"], match["team2"], match["score1"], match["score2"])
 		}
 	},
 }

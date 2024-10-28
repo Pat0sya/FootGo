@@ -40,8 +40,8 @@ func NewPlayer(name string, position Position, attackSkill, defenseSkill int) *P
 
 // DisplayStats выводит статистику игрока
 func (p *Player) DisplayStats() {
-	fmt.Printf("%s (%s) - Голы: %d, Фолы: %d, Желтые карточки: %d, Красные карточки: %d\n",
-		p.Name, p.Position, p.Goals, p.Fouls, p.YellowCards, p.RedCards)
+	fmt.Printf("%s (%s) - Голы: %d, \n",
+		p.Name, p.Position, p.Goals)
 }
 
 // ScoreGoal увеличивает количество забитых голов игроком

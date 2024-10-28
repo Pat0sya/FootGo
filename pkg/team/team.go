@@ -29,7 +29,8 @@ func (t *Team) AddPlayer(p *player.Player) {
 
 // DisplayTeamStats выводит статистику команды и каждого игрока
 func (t *Team) DisplayTeamStats() {
-	fmt.Printf("Команда: %s\nПобеды: %d, Поражения: %d, Ничьи: %d\n", t.Name, t.Wins, t.Losses, t.Draws)
+	fmt.Printf("|---------|Команда: %s|---------|\n", t.Name)
+	fmt.Printf("|Победы: %d|  Поражения: %d   | Ничьи: %d|\n", t.Wins, t.Losses, t.Draws)
 	fmt.Println("Игроки:")
 	for _, player := range t.Players {
 		player.DisplayStats()
